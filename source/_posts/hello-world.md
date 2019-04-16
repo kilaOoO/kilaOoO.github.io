@@ -36,3 +36,18 @@ $ hexo deploy
 ```
 
 More info: [Deployment](https://hexo.io/docs/deployment.html)
+
+```java
+class Demo{
+    public void method(){
+        //synchronized (锁句柄)，锁句柄是一个对象的引用，锁句柄对应的监视器为同步块的引导锁
+        synchronized(this){
+            //同步块
+        }
+    	synchronized(Demo.class){
+            //静态同步块
+        }
+    }
+}
+```
+
