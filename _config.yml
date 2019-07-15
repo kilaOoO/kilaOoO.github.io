@@ -3,12 +3,12 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: KilaOoO
 subtitle:
-description:
+description: Learning for the future
 keywords:
-author: John Doe
-language:
+author: bingsenh
+language: zh-Hans
 timezone:
 
 # URL
@@ -81,3 +81,27 @@ deploy:
   type: git
   repo: https://github.com/kilaOoO/kilaOoO.github.io.git
   branch: master
+  
+# Search 
+search:
+  path: ./public/search.xml
+  field: post
+  format: html
+  limit: 10000
+  
+live2d:
+  enable: true
+  scriptFrom: local
+  pluginRootPath: live2dw/
+  pluginJsPath: lib/
+  pluginModelPath: assets/
+  tagMode: false
+  debug: false
+  model:
+    use: live2d-widget-model-tororo
+  display:
+    position: right
+    width: 200
+    height: 400
+  mobile:
+    show: true
