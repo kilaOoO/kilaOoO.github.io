@@ -4,32 +4,6 @@
   
     
     <entry>
-      <title>xianchen</title>
-      <link href="/2019/07/15/xianchen/"/>
-      <url>/2019/07/15/xianchen/</url>
-      
-        <content type="html"><![CDATA[<h3 id="1-竞态"><a href="#1-竞态" class="headerlink" title="1. 竞态"></a>1. 竞态</h3><p>计算的正确性依赖于相对时间顺序或线程的交错顺序。<strong>同一组共享变量的多个线程所执行的操作相互交错而导致的干扰或者冲突的结果</strong>（读脏数据，丢失更新），保证操作的原子性可以消除竞态。</p>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>start</title>
-      <link href="/2019/07/15/start/"/>
-      <url>/2019/07/15/start/</url>
-      
-        <content type="html"><![CDATA[<p>你好啊</p><p>我很好</p><p>你呢</p>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>Hello World</title>
       <link href="/2019/04/16/hello-world/"/>
       <url>/2019/04/16/hello-world/</url>
