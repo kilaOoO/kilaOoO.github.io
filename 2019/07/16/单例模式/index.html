@@ -93,7 +93,7 @@
 <meta property="og:site_name" content="KilaOoO">
 <meta property="og:description" content="单例模式详解">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-17T14:21:18.538Z">
+<meta property="og:updated_time" content="2019-07-18T01:36:45.956Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="单例模式">
 <meta name="twitter:description" content="单例模式详解">
@@ -432,7 +432,7 @@
       
 
       
-        <p>​    单例模式可以保证系统中一个类只有一个实例而且该实例易于外界访问，从而方便对实例个数的控制并节约系统资源。</p>
+        <p>单例模式可以保证系统中一个类只有一个实例而且该实例易于外界访问，从而方便对实例个数的控制并节约系统资源。</p>
 <a id="more"></a>
 <h2 id="单例模式三元素"><a href="#单例模式三元素" class="headerlink" title="单例模式三元素"></a>单例模式三元素</h2><ol>
 <li>构造方法私有化</li>
@@ -464,7 +464,7 @@
 <p>为什么枚举能实现单例 ？通过反编译后的源码不难看出枚举的单例其实就是<strong>饿汉模式</strong>。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> <span class="keyword">extends</span> <span class="title">Enum</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton INSTANCE;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">(String s,<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(s,i);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">   	<span class="keyword">static</span></span><br><span class="line">    &#123;</span><br><span class="line">        INSTANCE = <span class="keyword">new</span> Singleton(<span class="string">"INSTANCE"</span>,<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Singleton[] values()&#123;...&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">valueOf</span><span class="params">(String s)</span></span>&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>如何防止反射攻击? </strong><br>因为在Constructor类的 <code>newInstance()</code> 方法中对枚举类型抛出了异常处理。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">newInstance</span><span class="params">(Object ... initargs)</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ((clazz.getModifiers() &amp; Modifier.ENUM) != <span class="number">0</span>) <span class="keyword">throw</span> <span class="keyword">new</span> 		          IllegalArgumentException(<span class="string">"Cannot reflectively create enum objects"</span>);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">newInstance</span><span class="params">(Object ... initargs)</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ((clazz.getModifiers() &amp; Modifier.ENUM) != <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Cannot reflectively create enum objects"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>如何防止反序列化？</strong><br>当对枚举类型进行反序列化时，会调用 <code>valueOf()</code> 方法来根据名字返回枚举对象，已创建的实例被枚举类存在一个 map 中，key 为 name,value 为 枚举实例变量。</p>
 <p>优点：保证线程安全，并且可以防止反射攻击和反序列化，这是其它以上方法不具备的。</p>
 <h2 id="破坏单例模式"><a href="#破坏单例模式" class="headerlink" title="破坏单例模式"></a>破坏单例模式</h2><p><strong>除了枚举实现的单例模式，其它单例的实现都可以通过反射和反序列化来破坏。</strong></p>
