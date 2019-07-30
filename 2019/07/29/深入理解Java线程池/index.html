@@ -86,16 +86,21 @@
 
 
 
-<meta name="description" content="Learning for the future">
-<meta property="og:type" content="website">
-<meta property="og:title" content="七月的风">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。 什么时候使用线程池？  单个任务时间短 需要处理的任务多">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Java线程池">
+<meta property="og:url" content="http://yoursite.com/2019/07/29/深入理解Java线程池/index.html">
 <meta property="og:site_name" content="七月的风">
-<meta property="og:description" content="Learning for the future">
+<meta property="og:description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。 什么时候使用线程池？  单个任务时间短 需要处理的任务多">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png">
+<meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/threadpool-status.png">
+<meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/executor.png">
+<meta property="og:updated_time" content="2019-07-30T02:38:19.267Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="七月的风">
-<meta name="twitter:description" content="Learning for the future">
+<meta name="twitter:title" content="深入理解Java线程池">
+<meta name="twitter:description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。 什么时候使用线程池？  单个任务时间短 需要处理的任务多">
+<meta name="twitter:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png">
 
 
 
@@ -125,13 +130,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2019/07/29/深入理解Java线程池/">
 
 
 
 
 
-  <title>七月的风</title>
+  <title>深入理解Java线程池 | 七月的风</title>
   
 
 
@@ -150,8 +155,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 	<a href="https://github.com/kilaOoO" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
 
@@ -277,9 +281,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -309,9 +313,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/29/深入理解Java线程池/" itemprop="url">深入理解Java线程池</a></h1>
+          <h1 class="post-title" itemprop="name headline">深入理解Java线程池</h1>
         
 
         <div class="post-meta">
@@ -375,6 +377,11 @@
           
 
           
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
 		  
 
           
@@ -425,21 +432,55 @@
       
 
       
-        
-          <h2 id="线程池介绍"><a href="#线程池介绍" class="headerlink" title="线程池介绍"></a>线程池介绍</h2><p><strong>线程池存在的意义是什么？</strong><br>如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对<strong>线程的复用</strong>，每次线程执行任务完毕可以继续执行其他任务。</p>
+        <h2 id="线程池介绍"><a href="#线程池介绍" class="headerlink" title="线程池介绍"></a>线程池介绍</h2><p><strong>线程池存在的意义是什么？</strong><br>如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对<strong>线程的复用</strong>，每次线程执行任务完毕可以继续执行其他任务。</p>
 <p><strong>什么时候使用线程池？</strong></p>
 <ul>
 <li>单个任务时间短</li>
 <li>需要处理的任务多</li>
 </ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/29/深入理解Java线程池/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+<a id="more"></a>
+<h2 id="ThreadPoolExecutor-类"><a href="#ThreadPoolExecutor-类" class="headerlink" title="ThreadPoolExecutor 类"></a>ThreadPoolExecutor 类</h2><p>J.U.C 并发包下的 ThreadPoolExecutor 是线程池的一个核心类，学习线程池有必要学习该类的源码。</p>
+<p><img src="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png" alt="QQ20170331-004227.png"></p>
+<p>上面这张类图可清楚的看出 ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor之间<br>的关系。其中 Executor 是一个顶层接口，只声明了一个 execute(Runnable) 方法，此方法用来执行传进去的任务。</p>
+<p>ThreadPoolExecutor 的构造方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                          TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">                          RejectedExecutionHandler handler)</span> </span>&#123;</span><br><span class="line">    .....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>corePoolSize</strong>: 核心线程数，当提交的任务超过核心线程数时则送入阻塞队列等待；</p>
+</li>
+<li><p><strong>maximumPoolSize</strong>:  可开启的最大线程数；</p>
+</li>
+<li><p><strong>workQueue</strong>: 任务等待队列;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ArrayBlockingQueue;</span><br><span class="line">LinkedBlockingQueue;<span class="comment">//一般使用这种方式，此时 maximumPoolSize 就不会起作用了</span></span><br><span class="line">SynchronousQueue;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>keepAliveTime</strong>: 当线程池中的线程数大于corePoolSize 时，如果线程空闲，核心线程外的线程超过时间后会自动销毁。</p>
+</li>
+<li><p><strong>threadFactory</strong>: 线程工厂。默认使用Executors.defaultThreadFactory。使用默认线程工厂时，线程具有相同的优先级并且为非守护线程，同时设置了线程名称。</p>
+</li>
+<li><p><strong>handler</strong>: <strong>线程池饱和策略</strong>。如果阻塞队列满了，并且线程池线程数 == maximumPoolSize ，这时如果有任务提交，则需要采取一种处理策略，线程池提供了 4 种策略：</p>
+<ul>
+<li>AbortPolicy：直接抛出异常，这是默认策略；</li>
+<li>CallerRunsPolicy：用调用者所在的线程来执行任务；</li>
+<li>DiscardOldestPolicy：丢弃阻塞队列中靠最前的任务，并执行当前任务;</li>
+<li>DiscardPolicy：直接丢弃任务；</li>
+</ul>
+</li>
+</ul>
+<h2 id="深入理解线程池实现原理"><a href="#深入理解线程池实现原理" class="headerlink" title="深入理解线程池实现原理"></a>深入理解线程池实现原理</h2><h3 id="线程池状态"><a href="#线程池状态" class="headerlink" title="线程池状态"></a>线程池状态</h3><p>线程池共有五种状态：</p>
+<ol>
+<li><strong>RUNNING</strong>: 能接受新任务提交，并且能处理阻塞队列中的任务。</li>
+<li><strong>SHUTDOWN</strong>: 不能接受新提交任务，但是可以处理阻塞队列的任务，调用 shutdown() 进入。</li>
+<li><strong>STOP</strong>: 不能接受任务也不能处理阻塞队列中的任务，并且尝试终止当前任务，调用 shutdownNow() 进入。</li>
+<li><strong>TIDYING</strong>: 所有任务结束，则进入该状态。</li>
+<li><strong>TERMINATED</strong>： 结束状态。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger ctl = <span class="keyword">new</span> AtomicInteger(ctlOf(RUNNING, <span class="number">0</span>));</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> COUNT_BITS = Integer.SIZE - <span class="number">3</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CAPACITY   = (<span class="number">1</span> &lt;&lt; COUNT_BITS) - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// runState is stored in the high-order bits</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RUNNING    = -<span class="number">1</span> &lt;&lt; COUNT_BITS;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SHUTDOWN   =  <span class="number">0</span> &lt;&lt; COUNT_BITS;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STOP       =  <span class="number">1</span> &lt;&lt; COUNT_BITS;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TIDYING    =  <span class="number">2</span> &lt;&lt; COUNT_BITS;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TERMINATED =  <span class="number">3</span> &lt;&lt; COUNT_BITS;</span><br></pre></td></tr></table></figure>
+<p>线程池状态转换图如下所示：</p>
+<p><img src="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/threadpool-status.png" alt="threadpool-status.png"></p>
+<h3 id="任务执行"><a href="#任务执行" class="headerlink" title="任务执行"></a>任务执行</h3><p><strong>execute()</strong> 方法用来提交任务，源码分析如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (command == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    	<span class="comment">// ctl 记录着runState 和 workerCount</span></span><br><span class="line">        <span class="keyword">int</span> c = ctl.get();</span><br><span class="line">    	<span class="comment">// 如果 workerCount 小于 corePoolSize 则创建新的线程并添加该任务</span></span><br><span class="line">        <span class="keyword">if</span> (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">            <span class="comment">// addWorker 的第二个参数表示用 corePoolSize(true) 判断还是 maximumPoolSize(false) 判断</span></span><br><span class="line">            <span class="keyword">if</span> (addWorker(command, <span class="keyword">true</span>))</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            c = ctl.get();</span><br><span class="line">        &#125;</span><br><span class="line">    	<span class="comment">//如果线程池处于运行态，且成功添加到队列</span></span><br><span class="line">        <span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">            <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">            <span class="comment">// 添加进队列后，当线程池不处于运行态(被其他线程杀掉了)或此时线程池无线程，需要进行后处理</span></span><br><span class="line">            <span class="comment">// 不处于运行态则将任务移除队列</span></span><br><span class="line">            <span class="comment">// 线程池中无线程则添加一个空任务线程，来保证后续有线程执行该任务</span></span><br><span class="line">            <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">                reject(command);</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">                addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    	<span class="comment">// 执行到这有两种情况：</span></span><br><span class="line">    	<span class="comment">// 1. 线程池不是 RUNNING 状态，但 workerCount &gt;= corePoolSize 并且 workerueue 已满</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!addWorker(command, <span class="keyword">false</span>))</span><br><span class="line">            reject(command);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>execute执行流程如下：</p>
+<p><img src="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/executor.png" alt="executor.png"></p>
+
       
     </div>
     
@@ -456,200 +497,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/16/单例模式/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="bingsenh">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/header.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="七月的风">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/16/单例模式/" itemprop="url">单例模式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-16T16:40:21+08:00">
-                2019-07-16
-              </time>
+              <a href="/2019/07/16/单例模式/" rel="next" title="单例模式">
+                <i class="fa fa-chevron-left"></i> 单例模式
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/设计模式/" itemprop="url" rel="index">
-                    <span itemprop="name">设计模式</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/07/16/单例模式/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/16/单例模式/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-		  
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.3k 字
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5 分钟
-                </span>
-              
-            </div>
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          单例模式详解
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/16/单例模式/">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -659,10 +528,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -670,6 +540,13 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -690,8 +567,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -744,6 +630,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池介绍"><span class="nav-number">1.</span> <span class="nav-text">线程池介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadPoolExecutor-类"><span class="nav-number">2.</span> <span class="nav-text">ThreadPoolExecutor 类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深入理解线程池实现原理"><span class="nav-number">3.</span> <span class="nav-text">深入理解线程池实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池状态"><span class="nav-number">3.1.</span> <span class="nav-text">线程池状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#任务执行"><span class="nav-number">3.2.</span> <span class="nav-text">任务执行</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -900,6 +802,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
