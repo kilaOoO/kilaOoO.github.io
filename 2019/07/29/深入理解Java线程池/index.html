@@ -86,20 +86,20 @@
 
 
 
-<meta name="description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。 什么时候使用线程池？  单个任务时间短 需要处理的任务多">
+<meta name="description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解Java线程池">
 <meta property="og:url" content="http://yoursite.com/2019/07/29/深入理解Java线程池/index.html">
 <meta property="og:site_name" content="七月的风">
-<meta property="og:description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。 什么时候使用线程池？  单个任务时间短 需要处理的任务多">
+<meta property="og:description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png">
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/threadpool-status.png">
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/executor.png">
-<meta property="og:updated_time" content="2019-07-30T02:38:19.267Z">
+<meta property="og:updated_time" content="2019-07-30T02:39:38.491Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解Java线程池">
-<meta name="twitter:description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。 什么时候使用线程池？  单个任务时间短 需要处理的任务多">
+<meta name="twitter:description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。">
 <meta name="twitter:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png">
 
 
@@ -433,12 +433,12 @@
 
       
         <h2 id="线程池介绍"><a href="#线程池介绍" class="headerlink" title="线程池介绍"></a>线程池介绍</h2><p><strong>线程池存在的意义是什么？</strong><br>如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对<strong>线程的复用</strong>，每次线程执行任务完毕可以继续执行其他任务。</p>
+<a id="more"></a>
 <p><strong>什么时候使用线程池？</strong></p>
 <ul>
 <li>单个任务时间短</li>
 <li>需要处理的任务多</li>
 </ul>
-<a id="more"></a>
 <h2 id="ThreadPoolExecutor-类"><a href="#ThreadPoolExecutor-类" class="headerlink" title="ThreadPoolExecutor 类"></a>ThreadPoolExecutor 类</h2><p>J.U.C 并发包下的 ThreadPoolExecutor 是线程池的一个核心类，学习线程池有必要学习该类的源码。</p>
 <p><img src="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png" alt="QQ20170331-004227.png"></p>
 <p>上面这张类图可清楚的看出 ThreadPoolExecutor、AbstractExecutorService、ExecutorService和Executor之间<br>的关系。其中 Executor 是一个顶层接口，只声明了一个 execute(Runnable) 方法，此方法用来执行传进去的任务。</p>
