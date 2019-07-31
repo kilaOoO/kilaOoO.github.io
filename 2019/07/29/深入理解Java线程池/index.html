@@ -86,20 +86,20 @@
 
 
 
-<meta name="description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。">
+<meta name="description" content="对线程池的实现原理进行分析，并简单实现一个SimpleThreadPool">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解Java线程池">
 <meta property="og:url" content="http://yoursite.com/2019/07/29/深入理解Java线程池/index.html">
 <meta property="og:site_name" content="七月的风">
-<meta property="og:description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。">
+<meta property="og:description" content="对线程池的实现原理进行分析，并简单实现一个SimpleThreadPool">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png">
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/threadpool-status.png">
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/executor.png">
-<meta property="og:updated_time" content="2019-07-30T02:39:38.491Z">
+<meta property="og:updated_time" content="2019-07-31T03:15:34.506Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解Java线程池">
-<meta name="twitter:description" content="线程池介绍线程池存在的意义是什么？如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对线程的复用，每次线程执行任务完毕可以继续执行其他任务。">
+<meta name="twitter:description" content="对线程池的实现原理进行分析，并简单实现一个SimpleThreadPool">
 <meta name="twitter:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png">
 
 
@@ -395,7 +395,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  987 字
+                  1k 字
                 </span>
               
 
@@ -411,12 +411,16 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3 分钟
+                  4 分钟
                 </span>
               
             </div>
           
 
+          
+              <div class="post-description">
+                  对线程池的实现原理进行分析，并简单实现一个SimpleThreadPool
+              </div>
           
 
         </div>
@@ -433,7 +437,6 @@
 
       
         <h2 id="线程池介绍"><a href="#线程池介绍" class="headerlink" title="线程池介绍"></a>线程池介绍</h2><p><strong>线程池存在的意义是什么？</strong><br>如果并发的线程数量很多，每个线程执行很短的时间就结束了，频繁的创建和销毁线程将会带来很大的开销。线程池实现了对<strong>线程的复用</strong>，每次线程执行任务完毕可以继续执行其他任务。</p>
-<a id="more"></a>
 <p><strong>什么时候使用线程池？</strong></p>
 <ul>
 <li>单个任务时间短</li>
@@ -445,7 +448,7 @@
 <p>ThreadPoolExecutor 的构造方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                          TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">                          RejectedExecutionHandler handler)</span> </span>&#123;</span><br><span class="line">    .....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p><strong>corePoolSize</strong>: 核心线程数，当提交的任务超过核心线程数时则送入阻塞队列等待；</p>
+<li><p><strong>corePoolSize</strong>: 核心线程数，当提交的任务超过核心线程数时则送入阻塞队列等待</p>
 </li>
 <li><p><strong>maximumPoolSize</strong>:  可开启的最大线程数；</p>
 </li>
@@ -480,6 +483,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (command == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    	<span class="comment">// ctl 记录着runState 和 workerCount</span></span><br><span class="line">        <span class="keyword">int</span> c = ctl.get();</span><br><span class="line">    	<span class="comment">// 如果 workerCount 小于 corePoolSize 则创建新的线程并添加该任务</span></span><br><span class="line">        <span class="keyword">if</span> (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">            <span class="comment">// addWorker 的第二个参数表示用 corePoolSize(true) 判断还是 maximumPoolSize(false) 判断</span></span><br><span class="line">            <span class="keyword">if</span> (addWorker(command, <span class="keyword">true</span>))</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            c = ctl.get();</span><br><span class="line">        &#125;</span><br><span class="line">    	<span class="comment">//如果线程池处于运行态，且成功添加到队列</span></span><br><span class="line">        <span class="keyword">if</span> (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">            <span class="keyword">int</span> recheck = ctl.get();</span><br><span class="line">            <span class="comment">// 添加进队列后，当线程池不处于运行态(被其他线程杀掉了)或此时线程池无线程，需要进行后处理</span></span><br><span class="line">            <span class="comment">// 不处于运行态则将任务移除队列</span></span><br><span class="line">            <span class="comment">// 线程池中无线程则添加一个空任务线程，来保证后续有线程执行该任务</span></span><br><span class="line">            <span class="keyword">if</span> (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">                reject(command);</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (workerCountOf(recheck) == <span class="number">0</span>)</span><br><span class="line">                addWorker(<span class="keyword">null</span>, <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    	<span class="comment">// 执行到这有两种情况：</span></span><br><span class="line">    	<span class="comment">// 1. 线程池不是 RUNNING 状态，但 workerCount &gt;= corePoolSize 并且 workerueue 已满</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!addWorker(command, <span class="keyword">false</span>))</span><br><span class="line">            reject(command);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>execute执行流程如下：</p>
 <p><img src="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/executor.png" alt="executor.png"></p>
+<h3 id="实现一个简单线程池"><a href="#实现一个简单线程池" class="headerlink" title="实现一个简单线程池"></a>实现一个简单线程池</h3><p><a href="https://github.com/kilaOoO/JucPractice/tree/master/SimpleThreadPool" target="_blank" rel="noopener">https://github.com/kilaOoO/JucPractice/tree/master/SimpleThreadPool</a></p>
 
       
     </div>
@@ -640,7 +644,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池介绍"><span class="nav-number">1.</span> <span class="nav-text">线程池介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadPoolExecutor-类"><span class="nav-number">2.</span> <span class="nav-text">ThreadPoolExecutor 类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深入理解线程池实现原理"><span class="nav-number">3.</span> <span class="nav-text">深入理解线程池实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池状态"><span class="nav-number">3.1.</span> <span class="nav-text">线程池状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#任务执行"><span class="nav-number">3.2.</span> <span class="nav-text">任务执行</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池介绍"><span class="nav-number">1.</span> <span class="nav-text">线程池介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadPoolExecutor-类"><span class="nav-number">2.</span> <span class="nav-text">ThreadPoolExecutor 类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深入理解线程池实现原理"><span class="nav-number">3.</span> <span class="nav-text">深入理解线程池实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池状态"><span class="nav-number">3.1.</span> <span class="nav-text">线程池状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#任务执行"><span class="nav-number">3.2.</span> <span class="nav-text">任务执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现一个简单线程池"><span class="nav-number">3.3.</span> <span class="nav-text">实现一个简单线程池</span></a></li></ol></li></ol></div>
             
 
           </div>
