@@ -130,6 +130,39 @@ execute执行流程如下：
 
 ![executor.png](http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/executor.png)
 
+### 几种线程池创建方法
+
+```java
+public static ExecutorService newFixedThreadPool(int nThreads) {
+    return new ThreadPoolExecutor(nThreads, nThreads,
+                                  0L, TimeUnit.MILLISECONDS,
+                                  new LinkedBlockingQueue<Runnable>());
+}
+public static ExecutorService newSingleThreadExecutor() {
+    return new FinalizableDelegatedExecutorService
+        (new ThreadPoolExecutor(1, 1,
+                                0L, TimeUnit.MILLISECONDS,
+                                new LinkedBlockingQueue<Runnable>()));
+}
+public static ExecutorService newCachedThreadPool() {
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                  60L, TimeUnit.SECONDS,
+                                  new SynchronousQueue<Runnable>());
+}
+```
+
+**newFixedThreadPool：**corePoolSize = nThread && maximumPoolSize = nThread，线程池维护 nThread 个线程。
+**newSingleThreadExecutor：** corePoolSize = 1 && maximumPoolSize = 1，线程池只维护一个线程。
+这两种创建方式缓冲队列都使用 LinkedBlockingQueue ，maximumPoolSize 不起作用。
+**newCachedThreadPool：**corePoolSize = 0 && maximumPoolSize = Integer.MAX_VALUE 使用 SynchronousQueue 没有容量，每次来了任务就创建线程运行。
+
+### 合理配置线程池大小
+
+**CPU 密集：**
+CPU密集型只有多核裁员意义，应尽量配置可能小的线程和 CPU 个数相当，**CPU 个数 + 1**。
+**IO 密集：**
+IO 密集型存在很多IO阻塞，多于 CPU 数量的线程数能充分利用 CPU，**CPU 个数 * 2**
+
 ### 实现一个简单线程池
 
 https://github.com/kilaOoO/JucPractice/tree/master/SimpleThreadPool
