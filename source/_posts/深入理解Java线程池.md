@@ -153,8 +153,17 @@ public static ExecutorService newCachedThreadPool() {
 
 **newFixedThreadPool：**corePoolSize = nThread && maximumPoolSize = nThread，线程池维护 nThread 个线程。
 **newSingleThreadExecutor：** corePoolSize = 1 && maximumPoolSize = 1，线程池只维护一个线程。
-这两种创建方式缓冲队列都使用 LinkedBlockingQueue ，maximumPoolSize 不起作用。
-**newCachedThreadPool：**corePoolSize = 0 && maximumPoolSize = Integer.MAX_VALUE 使用 SynchronousQueue 没有容量，每次来了任务就创建线程运行。
+这两种创建方式缓冲队列都使用 LinkedBlockingQueue ，maximumPoolSize 不起作用。**newCachedThreadPool：**corePoolSize = 0 && maximumPoolSize = Integer.MAX_VALUE 使用 SynchronousQueue 没有容量，每次来了任务就创建线程运行。
+**LinkedBlockingQueue 和 ArraBlockingQueue 区别 ：** 
+
+1. 队列中锁的实现不同
+   ArrayBlockingQueue中的锁是没有分离的，即生产和消费用的是同一个锁；
+    LinkedBlockingQueue中的锁是分离的，即生产用的是putLock，消费是takeLock；
+2. 在生产或消费时操作不同
+   ArrayBlockingQueue 基于数组，在生产和消费的时候，是直接将枚举对象插入或移除的，不会产生或销毁任何额外的对象实例；
+   LinkedBlockingQueue 基于链表，在生产和消费的时候，需要把枚举对象转换为 Node 进行插入或移除，会生成一个额外的Node对象，这在长时间内需要高效并发地处理大批量数据的系统中，其对于GC的存在影响；
+3. 队列大小初始化不同
+   ArrayBlockingQueue 是有界的,LinkedBlockingQueue 是无界的，默认是 Integer.MAX_VALUE；
 
 ### 合理配置线程池大小
 
