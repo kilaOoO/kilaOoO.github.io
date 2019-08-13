@@ -96,7 +96,7 @@
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/QQ20170331-004227.png">
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/threadpool-status.png">
 <meta property="og:image" content="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/executor.png">
-<meta property="og:updated_time" content="2019-08-12T09:39:05.211Z">
+<meta property="og:updated_time" content="2019-08-13T07:48:30.641Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入理解Java线程池">
 <meta name="twitter:description" content="对线程池的实现原理进行分析，并简单实现一个SimpleThreadPool">
@@ -395,7 +395,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.2k 字
+                  1.4k 字
                 </span>
               
 
@@ -484,7 +484,12 @@
 <p>execute执行流程如下：</p>
 <p><img src="http://www.ideabuffer.cn/2017/04/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%9AThreadPoolExecutor/executor.png" alt="executor.png"></p>
 <h3 id="几种线程池创建方法"><a href="#几种线程池创建方法" class="headerlink" title="几种线程池创建方法"></a>几种线程池创建方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                  <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                  <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService</span><br><span class="line">        (<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,</span><br><span class="line">                                <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newCachedThreadPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span>, Integer.MAX_VALUE,</span><br><span class="line">                                  <span class="number">60L</span>, TimeUnit.SECONDS,</span><br><span class="line">                                  <span class="keyword">new</span> SynchronousQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>newFixedThreadPool：</strong>corePoolSize = nThread &amp;&amp; maximumPoolSize = nThread，线程池维护 nThread 个线程。<br><strong>newSingleThreadExecutor：</strong> corePoolSize = 1 &amp;&amp; maximumPoolSize = 1，线程池只维护一个线程。<br>这两种创建方式缓冲队列都使用 LinkedBlockingQueue ，maximumPoolSize 不起作用。<br><strong>newCachedThreadPool：</strong>corePoolSize = 0 &amp;&amp; maximumPoolSize = Integer.MAX_VALUE 使用 SynchronousQueue 没有容量，每次来了任务就创建线程运行。</p>
+<p><strong>newFixedThreadPool：</strong>corePoolSize = nThread &amp;&amp; maximumPoolSize = nThread，线程池维护 nThread 个线程。<br><strong>newSingleThreadExecutor：</strong> corePoolSize = 1 &amp;&amp; maximumPoolSize = 1，线程池只维护一个线程。<br>这两种创建方式缓冲队列都使用 LinkedBlockingQueue ，maximumPoolSize 不起作用。<strong>newCachedThreadPool：</strong>corePoolSize = 0 &amp;&amp; maximumPoolSize = Integer.MAX_VALUE 使用 SynchronousQueue 没有容量，每次来了任务就创建线程运行。<br><strong>LinkedBlockingQueue 和 ArraBlockingQueue 区别 ：</strong> </p>
+<ol>
+<li>队列中锁的实现不同<br>ArrayBlockingQueue中的锁是没有分离的，即生产和消费用的是同一个锁；<br> LinkedBlockingQueue中的锁是分离的，即生产用的是putLock，消费是takeLock；</li>
+<li>在生产或消费时操作不同<br>ArrayBlockingQueue 基于数组，在生产和消费的时候，是直接将枚举对象插入或移除的，不会产生或销毁任何额外的对象实例；<br>LinkedBlockingQueue 基于链表，在生产和消费的时候，需要把枚举对象转换为 Node 进行插入或移除，会生成一个额外的Node对象，这在长时间内需要高效并发地处理大批量数据的系统中，其对于GC的存在影响；</li>
+<li>队列大小初始化不同<br>ArrayBlockingQueue 是有界的,LinkedBlockingQueue 是无界的，默认是 Integer.MAX_VALUE；</li>
+</ol>
 <h3 id="合理配置线程池大小"><a href="#合理配置线程池大小" class="headerlink" title="合理配置线程池大小"></a>合理配置线程池大小</h3><p><strong>CPU 密集：</strong><br>CPU密集型只有多核裁员意义，应尽量配置可能小的线程和 CPU 个数相当，<strong>CPU 个数 + 1</strong>。<br><strong>IO 密集：</strong><br>IO 密集型存在很多IO阻塞，多于 CPU 数量的线程数能充分利用 CPU，<strong>CPU 个数 * 2</strong></p>
 <h3 id="实现一个简单线程池"><a href="#实现一个简单线程池" class="headerlink" title="实现一个简单线程池"></a>实现一个简单线程池</h3><p><a href="https://github.com/kilaOoO/JucPractice/tree/master/SimpleThreadPool" target="_blank" rel="noopener">https://github.com/kilaOoO/JucPractice/tree/master/SimpleThreadPool</a></p>
 
