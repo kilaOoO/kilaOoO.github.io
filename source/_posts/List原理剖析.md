@@ -1,11 +1,12 @@
 ---
-title: List原理剖析
+title: ArrayList、LinkedList、Vector 原理剖析
 date: 2019-12-25 15:36:00
 tags:
 categories: java
+description: 对 ArrayList、LinkedList、Vector 的源码进行分析，并对优缺点进行对比
 ---
 
-## ArrayList
+## 一、ArrayList
 
 ### 1. 概述
 
@@ -113,7 +114,7 @@ public E remove(int index) {
 }
 ```
 
-## Vector
+## 二、Vector
 
 Vector 与 ArrayList基本类似，就不详述，唯一不同的是 Vector 大部分方法都加了 synchronized 关键字，是线程安全的。
 
@@ -124,7 +125,7 @@ protected Object[] elementData;
 protected int elementCount;
 //当Vector的大小大于其容量时，Vector的容量自动增加的量
 
-/*****这里不同于 ArrayList 直接扩容1.5倍，而是指定扩张容量*****/
+/*****这里不同于 ArrayList 直接扩容1.5倍，而是指定扩张容量，不指定则默认扩张为2 倍*****/
 protected int capacityIncrement;
 
 //带容量和容量自动增加量的参数的构造函数
@@ -150,7 +151,7 @@ public Vector() {
 }
 ```
 
-## LinkedList
+## 三、LinkedList
 
 LinkedList 底层用双向链表实现，具有链表存取的优点和缺点。
 
@@ -300,4 +301,12 @@ Node<E> node(int index) {
 }
 ```
 
-**判断index是在前半区间还是后半区间，如果在前半区间就从head搜索，而在后半区间就从tail搜索。而不是一直从头到尾的搜索。如此设计，将节点访问的复杂度由O(n)变为O(n/2)。**
+**判断 index 是在前半区间还是后半区间，如果在前半区间就从 head 搜索，而在后半区间就从 tail 搜索。而不是一直从头到尾的搜索。如此设计，将节点访问的复杂度由 O(n) 变为 O(n/2) 。**
+
+## 四、总结
+
+ArrayList, LinkedList 和 Vector 都实现了 List 接口，所使用的方法也很相似，主要区别在于实现方法的不同，所有对不同的操作具有不同的效率。
+
+ArrayList 和 Vector 它们的底层实现为数组，值可以为 null，ArrayList 不支持并发，Vector 支持并发。ArrayList 在扩容方面扩大1.5倍，Vector 自己指定。
+
+LinkedList 底层基于双向链表，因此在 add/remove 元素时比 ArrayList 快。适用于没有大量的随机访问操作且有大量的 add/remove 操作的场景，否则使用 ArrayList。
