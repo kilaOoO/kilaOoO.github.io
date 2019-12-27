@@ -8,7 +8,7 @@ description: 基于JDK1.8详细分析了 HashMap
 
 本文基于JDK1.8,相比于1.7会有区别，后面提到。
 
-### 1. 定义
+### 1. 基本结构
 
 ```java
 public class HashMap<K,V>
@@ -136,12 +136,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 基本流程：
 
 1. 下标直接命中 table 中的唯一节点直接返回；
-
-2. 如果冲突，则通过 key.equals(k) 去查找对应的 entry；
-
-   若为树，则在树中查找，O(logn);
-
-   若为链表，则在链表中查找，O(n)。
+2. 如果冲突，则通过 key.equals(k) 去查找对应的 entry；若为树，则在树中查找，O(logn)，若为链表，则在链表中查找，O(n)。
 
 代码实现：
 
@@ -177,7 +172,7 @@ final Node<K,V> getNode(int hash, Object key) {
 
 
 
-### 4. hash 的实现
+### 4. hash 的原理
 
 在 get 和 put 的过程中，计算下标时，先对 hashCode 进行 hash 操作，然后再通过 hash 值进一步计算 index。
 
@@ -205,7 +200,7 @@ HashCode 高 16bit 不变,低 16bit 和高 16bit 做了一个异或。作者认�
 为什么跟 length -  1 进行 & 运算？
 因为 length 为 2 的幂次方，即一定是偶数，偶数减1，即是奇数，这样保证了（length-1）在二进制中最低位是1，而 & 运算结果的最低位是1还是0完全取决于 hash 值二进制的最低位。如果 length 为奇数，则 length-1 则为偶数，则 length-1 二进制的最低位横为 0，则 & 位运算的结果最低位横为 0，即横为偶数。这样 table 数组就只可能在偶数下标的位置存储了数据，浪费了所有奇数下标的位置，这样也更容易产生 hash 冲突。这也是 HashMap的容量为什么总是 2 的平方数的原因。
 
-### 5. resize 实现
+### 5. resize 的扩容机制
 
 当 put 时，如果发现目前的 bucket 占用程度已经超过了 Load Factor 所希望的比例，那么就会发生 resize。在resize 的过程，简单的说就是把 bucket 扩充为2倍，之后重新计算 index ，把节点再放到新的 bucket 中。
 
@@ -319,3 +314,6 @@ final Node<K,V>[] resize() {
 - HashMap默认初始化大小为16，HashTable为11；HashMap 扩容时是`扩大两倍`，而 HashTable 扩容是`两倍加一`；
 - HashTable继承自`Dictionary`类，HashMap 继承 `AbstractMap`类。
 
+### 8. HashMap VS CurrentHashMap
+
+待续。。。。。。
