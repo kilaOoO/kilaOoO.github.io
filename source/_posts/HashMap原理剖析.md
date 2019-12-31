@@ -314,6 +314,6 @@ final Node<K,V>[] resize() {
 - HashMap默认初始化大小为16，HashTable为11；HashMap 扩容时是`扩大两倍`，而 HashTable 扩容是`两倍加一`；
 - HashTable继承自`Dictionary`类，HashMap 继承 `AbstractMap`类。
 
-### 8. HashMap VS CurrentHashMap
+### 8. HashMap VS ConcurrentHashMap
 
-待续。。。。。。
+后续文章详解 ......
