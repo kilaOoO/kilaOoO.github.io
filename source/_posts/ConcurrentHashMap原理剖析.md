@@ -12,7 +12,7 @@ ConcurrentHashMap 在 1.7 和 1.8 实现有所不同，分两个版本对比。
 
 ![__I7__CMDFI4_YIFQJ66YFI.png](https://i.loli.net/2019/12/31/WniKElrMJU2a9fX.png)
 
-ConcurrentHashMap 由 Segment 数组、HashEntry 组成。HashEntry 和 HashMap 一样 数组 + 链表。其中HashEntry 中的 value  用 volatile 修饰，保证可见性。Segment 数组的意义就是将一个大的 table 分割成多个小的table来进行加锁。
+ConcurrentHashMap 由 Segment 数组、HashEntry 组成。HashEntry 和 HashMap 一样 数组 + 链表。其中HashEntry 中的 value  用 volatile 修饰，保证可见性。Segment 数组的意义就是将一个大的 table 分割成多个小的 table 来进行加锁。
 
 ### 1. put 实现
 
@@ -21,17 +21,20 @@ public V put(K key, V value) {
     Segment<K,V> s;
     if (value == null)
         throw new NullPointerException();
+    // 对key求hash值，并确定应该放到segment数组的索引位置
     int hash = hash(key);
     int j = (hash >>> segmentShift) & segmentMask;
     if ((s = (Segment<K,V>)UNSAFE.getObject          // nonvolatile; recheck
          (segments, (j << SSHIFT) + SBASE)) == null) //  in ensureSegment
         s = ensureSegment(j);
+     // 找到了对应的Segment，则把元素放到Segment中去
     return s.put(key, hash, value, false);
 }
 ```
 
 ```java
 final V put(K key, int hash, V value, boolean onlyIfAbsent) {
+    // 这里是并发的关键，每一个Segment进行put时，都会加锁
     HashEntry<K,V> node = tryLock() ? null :
         scanAndLockForPut(key, hash, value);
     V oldValue;
@@ -42,6 +45,7 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
         for (HashEntry<K,V> e = first;;) {
             if (e != null) {
                 K k;
+                // 如果在该链中找到相同的key，则用新值替换旧值，并退出循环
                 if ((k = e.key) == key ||
                     (e.hash == hash && key.equals(k))) {
                     oldValue = e.value;
@@ -54,12 +58,14 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
                 e = e.next;
             }
             else {
+                // 如果没有找到key相同的，则把当前Entry插入到链头
                 if (node != null)
                     node.setNext(first);
                 else
                     node = new HashEntry<K,V>(hash, key, value, first);
                 int c = count + 1;
                 if (c > threshold && tab.length < MAXIMUM_CAPACITY)
+                    // 如果超出了限制，要进行扩容
                     rehash(node);
                 else
                     setEntryAt(tab, index, node);
@@ -78,7 +84,7 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
 
 put 的整个流程：
 
-1. 通过 key 定位到 Segment，如果该Segment还没有初始化，即通过CAS操作进行赋值，之后在对应的 Segment 中进行具体的 put；
+1. 通过 key 定位到 Segment，之后在对应的 Segment 中进行具体的 put；
 2. 尝试自旋获取当前 Segment 的锁；
 3. 将当前 Segment 中的 table 通过 key 的 hashcode 定位到 HashEntry；
 4. 进行插入操作；
@@ -103,15 +109,19 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
     int binCount = 0;
     for (Node<K,V>[] tab = table;;) {
         Node<K,V> f; int n, i, fh;
+        // 1. table 为空则初始化
         if (tab == null || (n = tab.length) == 0)
             tab = initTable();
+        // 2. 无 hash 冲突,CAS 插入数据
         else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
             if (casTabAt(tab, i, null,
                          new Node<K,V>(hash, key, value, null)))
                 break;                   // no lock when adding to empty bin
         }
+        // 3. 等待扩容
         else if ((fh = f.hash) == MOVED)
             tab = helpTransfer(tab, f);
+        // 4. synchronized 锁住首节点插入数据
         else {
             V oldVal = null;
             synchronized (f) {
@@ -148,6 +158,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
                     }
                 }
             }
+            // 5. 超过阈值化链表为树
             if (binCount != 0) {
                 if (binCount >= TREEIFY_THRESHOLD)
                     treeifyBin(tab, i);
@@ -164,10 +175,10 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 
 put 的整个流程：
 
-1. 如果没有初始化就先调用 initTable（）方法来进行初始化过程；
-2. 如果没有hash冲突就直接 CAS 插入；
+1. 如果没有初始化就先调用 `initTable（）`方法来进行初始化过程；
+2. 如果没有 hash 冲突就直接 CAS 插入；
 3. 如果还在进行扩容操作就先进行扩容；
-4. 如果存在 hash 冲突，synchronized 锁写入数据，这里有两种情况，一种是链表形式就直接遍历到尾端插入，一种是红黑树就按照红黑树结构插入；
+4. 如果存在 hash 冲突，`synchronized` 锁住首节点写入数据，这里有两种情况，一种是链表形式就直接遍历到尾端插入，一种是红黑树就按照红黑树结构插入；
 5. 如果数量大于 `TREEIFY_THRESHOLD` 则要转换为红黑树。
 
 ### 2. get 实现
