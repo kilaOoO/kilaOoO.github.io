@@ -317,3 +317,32 @@ final Node<K,V>[] resize() {
 ### 8. HashMap VS ConcurrentHashMap
 
 后续文章详解 ......
+
+### 9. 基于HashMap 实现的 HashSet
+
+这里为什么要引入 HashSet 是因为 HashSet 是基于 HashMap 来实现的，操作很简单，更像是对 HashMap 做了一次“封装”，而且只使用了 HashMap 的 key 来实现各种特性。
+
+```java
+private transient HashMap<E,Object> map;
+// Dummy value to associate with an Object in the backing Map
+private static final Object PRESENT = new Object();
+```
+
+可以看到 HashSet 内部维护了一个 HashMap,并引入了一个 `Dummy value`（虚值），即 set 利用 map 中 key 的不重复性来存储值，且使 map 中的所有 value 都等于一个默认值。
+
+```java
+public boolean add(E e) {
+    return map.put(e, PRESENT)==null;
+}
+public boolean remove(Object o) {
+    return map.remove(o)==PRESENT;
+}
+public boolean contains(Object o) {
+    return map.containsKey(o);
+}
+public int size() {
+    return map.size();
+}
+```
+
+基本操作就如调用 map 方法一样，只是做了些小修改。
