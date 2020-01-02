@@ -97,7 +97,7 @@
 <meta property="og:image" content="https://i.loli.net/2019/12/27/inyNCZcsFkWBQz6.png">
 <meta property="og:image" content="https://i.loli.net/2019/12/27/EyOb4Jn1ZPsU78e.png">
 <meta property="og:image" content="https://i.loli.net/2019/12/27/sYwVcpobiyTtBx8.png">
-<meta property="og:updated_time" content="2019-12-31T03:33:53.943Z">
+<meta property="og:updated_time" content="2020-01-02T07:56:18.484Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HashMap 原理剖析">
 <meta name="twitter:description" content="基于JDK1.8详细分析了 HashMap">
@@ -396,7 +396,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.3k 字
+                  2.5k 字
                 </span>
               
 
@@ -412,7 +412,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  10 分钟
+                  11 分钟
                 </span>
               
             </div>
@@ -495,6 +495,11 @@
 <li>HashTable继承自<code>Dictionary</code>类，HashMap 继承 <code>AbstractMap</code>类。</li>
 </ul>
 <h3 id="8-HashMap-VS-ConcurrentHashMap"><a href="#8-HashMap-VS-ConcurrentHashMap" class="headerlink" title="8. HashMap VS ConcurrentHashMap"></a>8. HashMap VS ConcurrentHashMap</h3><p>后续文章详解 ……</p>
+<h3 id="9-基于HashMap-实现的-HashSet"><a href="#9-基于HashMap-实现的-HashSet" class="headerlink" title="9. 基于HashMap 实现的 HashSet"></a>9. 基于HashMap 实现的 HashSet</h3><p>这里为什么要引入 HashSet 是因为 HashSet 是基于 HashMap 来实现的，操作很简单，更像是对 HashMap 做了一次“封装”，而且只使用了 HashMap 的 key 来实现各种特性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> HashMap&lt;E,Object&gt; map;</span><br><span class="line"><span class="comment">// Dummy value to associate with an Object in the backing Map</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object PRESENT = <span class="keyword">new</span> Object();</span><br></pre></td></tr></table></figure>
+<p>可以看到 HashSet 内部维护了一个 HashMap,并引入了一个 <code>Dummy value</code>（虚值），即 set 利用 map 中 key 的不重复性来存储值，且使 map 中的所有 value 都等于一个默认值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.put(e, PRESENT)==<span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.remove(o)==PRESENT;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.containsKey(o);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.size();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>基本操作就如调用 map 方法一样，只是做了些小修改。</p>
 
       
     </div>
@@ -529,8 +534,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/12/31/ConcurrentHashMap原理剖析/" rel="prev" title="ConcurrentHashMap原理剖析">
-                ConcurrentHashMap原理剖析 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/12/31/ConcurrentHashMap原理剖析/" rel="prev" title="ConcurrentHashMap 原理剖析">
+                ConcurrentHashMap 原理剖析 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -659,7 +664,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-基本结构"><span class="nav-number">1.</span> <span class="nav-text">1. 基本结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-put-的实现"><span class="nav-number">2.</span> <span class="nav-text">2. put 的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-get-的实现"><span class="nav-number">3.</span> <span class="nav-text">3. get 的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-hash-的原理"><span class="nav-number">4.</span> <span class="nav-text">4. hash 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-resize-的扩容机制"><span class="nav-number">5.</span> <span class="nav-text">5. resize 的扩容机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-HashMap-JDK-1-7-VS-1-8"><span class="nav-number">6.</span> <span class="nav-text">6. HashMap JDK 1.7 VS 1.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-HashMap-VS-HashTable"><span class="nav-number">7.</span> <span class="nav-text">7. HashMap VS HashTable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-HashMap-VS-ConcurrentHashMap"><span class="nav-number">8.</span> <span class="nav-text">8. HashMap VS ConcurrentHashMap</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-基本结构"><span class="nav-number">1.</span> <span class="nav-text">1. 基本结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-put-的实现"><span class="nav-number">2.</span> <span class="nav-text">2. put 的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-get-的实现"><span class="nav-number">3.</span> <span class="nav-text">3. get 的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-hash-的原理"><span class="nav-number">4.</span> <span class="nav-text">4. hash 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-resize-的扩容机制"><span class="nav-number">5.</span> <span class="nav-text">5. resize 的扩容机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-HashMap-JDK-1-7-VS-1-8"><span class="nav-number">6.</span> <span class="nav-text">6. HashMap JDK 1.7 VS 1.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-HashMap-VS-HashTable"><span class="nav-number">7.</span> <span class="nav-text">7. HashMap VS HashTable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-HashMap-VS-ConcurrentHashMap"><span class="nav-number">8.</span> <span class="nav-text">8. HashMap VS ConcurrentHashMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-基于HashMap-实现的-HashSet"><span class="nav-number">9.</span> <span class="nav-text">9. 基于HashMap 实现的 HashSet</span></a></li></ol></div>
             
 
           </div>
@@ -679,7 +684,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
